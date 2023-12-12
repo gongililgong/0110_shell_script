@@ -221,7 +221,7 @@
 # selinux disable
   - name: "systemctl disable ufw"
     systemd:
-      name: "apparmor"
+      name: "ufw"
       enabled: "no"
       state: stopped
 
