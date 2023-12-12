@@ -20,7 +20,7 @@
         name: "{{ subnet_name }}"
         address_prefix: "{{ subnet_prefixes }}"
         virtual_network: "{{ virtual_network_name }}"
-        state: absent
+
 # 네트워크 보안 그룹 만들기
     - name: Create Network Security Group == {{ vm_name }}-nsg
       azure_rm_securitygroup:
