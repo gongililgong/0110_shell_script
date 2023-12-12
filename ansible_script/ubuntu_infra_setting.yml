@@ -1,0 +1,591 @@
+# 이 파일은 yaml vm 배포 후 추가적으로 환경 세팅을 해줍니다. made by 0110
+# 제작 목적 : VM 생성 후 초기 환경 셋팅을 위한 파일 
+# 적용 범위
+# 필요한 패키지 설치 진행 [완료]
+# SSH Port 22 -> 16215 [완료]
+# /etc/motd 접근 로그인 창 변경 [완료]
+# /etc/sysctl.conf 리눅스 커널 변경 [완료]
+# /etc/selinux/config  selinux 꺼주기 [완료]
+# enforce 부분 Permissive로 변경 [완료]
+# timezone 을 Asia/Seoul로 변경 해주기 [완료]
+# docker 설치 및 활성화 , 유저 권한 변경 [완료]
+# node_exporter 설치 및 python3 pip 설치 [완료]
+# bash 로그인 프로파일 부분 수정 [완료]
+# /etc/security/limits 부분 수정 [완료]
+#  배너 조정 [완료]
+#  젠킨스 원격 키 배포 [완료]
+#  ssh port 변경 [완료]
+#  docker log 로테이션 추가 [완료]
+#  pip3 install docker-compose [완료]
+#  apparmor systemctl 에서 비활성화 [완료]
+#  cadvisor 설치하기[완료]
+# 향후 더 필요한 정보들은 아래에 계속 기입
+############d########################################################################
+- hosts: "{{ hosts }}" ## AWX 내에 EXTRA var 에서 hosts : [호스트명을 입력해주세요]
+  gather_facts: no ## 정보 팩트 체크 no로 설정시 좀더 빠르게 돌릴 수 있음
+  become: yes  ## 루트 권한으로 전환 시켜준다 
+  vars: 
+    blackbox_dir: /tmp/blackbox_exporter-0.24.0.linux-amd64
+    remote_dir: /usr/local/bin
+  tasks: 
+  - name : "apt get update  "
+    apt : 
+      upgrade : yes
+      update_cache: yes
+  - name : "프로메테우스 모니터링 설치 및 모니터링 수집 도구 blackbox-exporter 설치 부분"
+    get_url:
+      url: https://github.com/prometheus/blackbox_exporter/releases/download/v0.24.0/blackbox_exporter-0.24.0.linux-amd64.tar.gz
+      dest: /tmp/blackbox_exporter-0.24.0.linux-amd64.tar.gz
+  - name: "download 받은 blackbox exporter 압축 해제"
+    unarchive:
+      src: /tmp/blackbox_exporter-0.24.0.linux-amd64.tar.gz
+      dest: /tmp/
+      remote_src: true
+  - name: "압축 해제된 blackbox_Exporter /usr/local/bin으로 옮기기"
+    copy:
+      src: /tmp/blackbox_exporter-0.24.0.linux-amd64/blackbox_exporter
+      dest: /usr/local/bin/blackbox_exporter
+      mode: u+x,g+x,o+x 
+      remote_src: true
+  - name: "압축 해제된 blackbox_Exporter /usr/local/bin으로 옮기기2"
+    copy:
+      src: /tmp/blackbox_exporter-0.24.0.linux-amd64/blackbox.yml
+      dest: /usr/local/bin/blackbox.yml
+      mode: u+x,g+x,o+x 
+      remote_src: true
+  
+  ## node_exporter systemctl 에 서비스 추가해줄 부분 생성
+  - name: "blackbox_exporter.service 파일 생성"
+    file:
+      path: "/etc/systemd/system/blackbox_exporter.service"     
+      state: touch
+      mode: '0755'
+
+  - name: "systemctl service에 blackbox_exporter 추가 시키기"
+    blockinfile: 
+      path: /etc/systemd/system/blackbox_exporter.service
+      block: >
+        [Unit]
+
+        Description=Blackbox Exporter
+
+        Wants=network.target
+
+        After=network.target
+
+        [Service]
+
+        User=root
+
+        Group=root
+
+        Type=simple
+
+        ExecStart=/usr/local/bin/blackbox_exporter --config.file=/usr/local/bin/blackbox.yml
+
+        [Install]
+
+        WantedBy=multi-user.target
+
+      create: yes
+      
+        
+  - name : "apt get install 목록"
+    apt :
+       name :
+        - bash-completion
+        - build-essential
+        - apt-file
+        - zlib1g-dev
+        - openjdk-11-jre
+        - wget
+        - net-tools
+        - python3-pip
+        - python3-docker
+        - git
+        - docker
+        - docker-compose
+        - linux-modules-extra-azure
+  # - name : "docker & compose install "
+  #   snap:
+  #     name : 
+  #      - docker
+
+  - name : "/etc/sysctl.conf 변경 구간"
+    blockinfile: 
+      path: /etc/sysctl.conf
+      block: >
+        vm.swappiness=0 
+
+        net.ipv4.ip_forward=1 
+
+        fs.file-max=10000000 
+
+        net.core.somaxconn=65535
+
+        net.core.netdev_max_backlog=16777216
+
+        net.core.rmem_max=134217728
+
+        net.core.wmem_max=67108864
+
+        net.core.rmem_default=67108864
+
+        net.core.wmem_default=67108864
+
+        net.core.optmem_max=67108864
+
+        net.ipv4.ip_local_port_range=1024 65535
+
+        net.ipv4.tcp_tw_reuse=1
+
+        net.ipv4.tcp_max_syn_backlog=16777216
+
+        net.ipv4.tcp_syncookies=1
+
+        net.ipv4.tcp_mem=134217728 134217728 134217728
+
+        net.ipv4.tcp_rmem=10240 87380 134217728
+
+        net.ipv4.tcp_wmem=10240 87380 134217728
+        
+        net.ipv4.tcp_fin_timeout=10
+
+        net.ipv4.tcp_max_orphans=262144
+
+        net.ipv4.tcp_synack_retries=5
+
+        net.ipv4.tcp_syn_retries=5
+
+        net.ipv4.tcp_keepalive_time=60
+
+        net.ipv4.tcp_keepalive_probes=3
+
+        net.ipv4.tcp_keepalive_intvl=5
+
+        net.ipv4.tcp_sack=1
+
+        net.ipv4.tcp_timestamps=1
+
+        net.ipv4.tcp_window_scaling=1
+
+        net.ipv4.tcp_slow_start_after_idle=0
+
+        net.ipv4.udp_rmem_min=65536
+
+        net.ipv4.udp_wmem_min=65536
+
+        net.unix.max_dgram_qlen=100
+
+        vm.dirty_ratio=40
+
+        vm.dirty_background_ratio=10
+
+        vm.max_map_count=262144
+
+        net.ipv4.tcp_fack=1
+
+        kernel.msgmnb=65536
+
+        kernel.msgmax=65536
+
+        vm.overcommit_memory=1
+      state: present
+  
+  # sysctl.conf 적용부분
+  - name:
+    command: "sudo /sbin/sysctl -p /etc/sysctl.conf"
+
+  # Time zone Seoul로 변경
+  - name: "timezone 설정 구간"
+    command: "sudo ln -sf /usr/share/zoneinfo/Asia/Seoul /etc/localtime"
+
+  - name: "timezone 서울로 설정"
+    command: "timedatectl set-timezone Asia/Seoul"
+
+  - name: "chrony time.bora.net 서버로 변경 "
+    command: "sudo sed -i 's/server/#server/' /etc/chrony/chrony.conf"
+
+  - name: "chrony 동기화 서버 넣기"
+    blockinfile:
+      path: "/etc/chrony/chrony.conf"
+      block: >
+          
+          server time.bora.net iburst
+      state: present 
+
+  - name: "systemctl restart chronyd"
+    systemd:
+      name: "chronyd"
+      state: restarted
+  - name: "systemctl disable apparmor"
+    systemd:
+      name: "apparmor"
+      enabled: "no"
+      state: stopped
+# selinux disable
+  - name: "systemctl disable ufw"
+    systemd:
+      name: "apparmor"
+      enabled: "no"
+      state: stopped
+
+  - name : "docker 자동완성"
+    command: curl https://raw.githubusercontent.com/docker/docker-ce/master/components/cli/contrib/completion/bash/docker -o /etc/bash_completion.d/docker.sh
+  - name: "docker bash 수정"
+    blockinfile:
+      path: "/etc/bash.bashrc"
+      block: >
+        if ! shopt -oq posix; then
+  
+          if [ -f /usr/share/bash-completion/bash_completion ]; then
+      
+            . /usr/share/bash-completion/bash_completion
+          
+          elif [ -f /etc/bash_completion ]; then
+          
+            . /etc/bash_completion
+          
+          fi
+        
+        fi
+      state: present
+  - name: "pip3 install docker-compose"
+    pip:
+      name: docker-compose
+      executable: pip3
+
+  - name : "프로메테우스 모니터링 설치 및 모니터링 수집 도구 node-exporter 설치 부분"
+    get_url:
+      url: https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
+      dest: /tmp/node_exporter-1.7.0.linux-amd64.tar.gz
+  - name: "download 받은 node exporter 압축 해제"
+    unarchive:
+      src: /tmp/node_exporter-1.7.0.linux-amd64.tar.gz
+      dest: /tmp/
+      remote_src: true
+  - name: "압축 해제된 node_Exporter /usr/local/bin으로 옮기기"
+    copy:
+     src: /tmp/node_exporter-1.7.0.linux-amd64/node_exporter
+     dest: /usr/local/bin/
+     mode: u+x,g+x,o+x 
+     remote_src: true
+  
+  ## node_exporter systemctl 에 서비스 추가해줄 부분 생성
+  - name: "node_exporter.service 파일 생성"
+    file:
+      path: "/etc/systemd/system/node_exporter.service"     
+      state: touch
+      mode: '0755'
+
+
+
+  - name: "systemctl service에 node_exporter 추가 시키기"
+    blockinfile: 
+      path: /etc/systemd/system/node_exporter.service
+      block: >
+        [Unit]
+
+        Description=Node Exporter
+
+        After=network.target
+
+        [Service]
+
+        User=root
+
+        Group=root
+
+        Type=simple
+
+        ExecStart=/usr/local/bin/node_exporter
+
+        [Install]
+
+        WantedBy=multi-user.target
+      create: yes
+  - name: "systemctl start node_exporter"
+    systemd:
+      name: "node_exporter"
+      enabled: "yes"
+      state: started
+  - name: "bash 로그인 프로파일 수정 부분 "
+    blockinfile:
+      path: /etc/profile
+      block: > 
+        export PS1=`hostname`'-$LOGNAME $PWD>'
+
+
+  - name: "ssh-rsa 넣어주기 "
+    blockinfile:
+      path: /etc/ssh/sshd_config
+      block: > 
+        PubkeyAcceptedAlgorithms +ssh-rsa  
+  - name: "bashrc 적용"
+    blockinfile:
+      path: /root/.bashrc
+      block: >
+        export PS1="[\$LOGNAME@\`hostname\`:\$PWD]"
+
+        if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+        
+          . /etc/bash_completion
+        
+        fi
+
+  # - name: "/etc/security/limit.d 변경"
+  #   lineinfile:
+  #     path: "/etc/security/limits.d/20-nproc.conf"
+  #     regexp: "{{item.regexp}}"
+  #     line: "{{item.line}}"
+  #   loop: 
+  #     - { regexp: '^\*          soft    nproc     4096', line: '#\*          soft    nproc     4096'}
+  #     - { regexp: '^root       soft    nproc     unlimited', line: '#root       soft    nproc     unlimited'}
+    
+
+# filedescriptor 부분
+  - name: "/etc/security/limits.conf 변경"
+    blockinfile:
+      path: "/etc/security/limits.conf"
+      block: >
+        *          soft    nproc     unlimited
+
+        *          hard    nproc     unlimited
+
+        *          soft    nofile    65536
+
+        *          hard    nofile    65536
+      state: present 
+  # - name: "/etc/security/limits.d/20-nproc 백업본 하나 냅두기"
+  #   copy:
+  #     src: /etc/security/limits.d/20-nproc.conf
+  #     dest: /etc/security/limits.d/20-nproc.conf.bak
+  #     mode: '0644' 
+  #     remote_src: true
+
+
+  # - name: "/etc/security/limits.d/20-nproc 변경"
+  #   blockinfile:
+  #     path: "/etc/security/limits.d/20-nproc.conf"
+  #     block: >
+  #       *          soft    nproc     unlimited
+
+  #       *          hard    nproc     unlimited
+
+  #       root       soft    nproc     unlimited
+
+  #       root       hard    nproc     unlimited
+
+
+
+  - name: "swap 부분 off로 변경"
+    command: "swapoff -a"
+  - name: "fstab 에서 스왑 부분 주석 처리 해주기"
+    lineinfile:
+      path: "/etc/fstab"
+      regexp: '\/swap'
+      line: "#/swap"
+      backrefs: yes      
+
+  - name : "서버 접속 Banner 경로 변경"
+    lineinfile:
+      path: "/etc/ssh/sshd_config"
+      regexp: '\#Banner none$'
+      line: "Banner /etc/issue.net"
+      backrefs: yes
+  
+  - name : "기존 적용 되어 있던 Banner issue.net 삭제"
+    file:
+      path: "/etc/issue.net"
+      state: absent
+    # 젠킨스 홈디렉토리의 ssh 디렉토리에서 공개키를 출력한다.
+  - name: "cat /var/lib/jenkins/.ssh/id_rsa.pub"
+    command: "cat /var/lib/jenkins/.ssh/id_rsa.pub"
+    connection: local
+    register: id_pub
+    run_once: true
+    vars:
+      ansible_python_interpreter: /usr/bin/python3
+  # 젠킨스의 공개키를 원격 서버의 authorized_keys에 추가한다.
+  - name: import id_rsa.pub ======> {{ hosts }}
+    lineinfile:
+      dest: "/home/{{ remote_user }}/.ssh/authorized_keys"
+      line: "{{ id_pub.stdout }}"
+
+  # 점프 박스의 공개 키를 원격 서버의 authorized_keys에 추가한다.
+  - name: "{{ hosts }}의 authorized_keys에 점프 박스의 공개키를 추가한다."
+    lineinfile:
+      dest: "/home/{{ remote_user }}/.ssh/authorized_keys"
+      line: "{{ pubkey }}"
+    become: yes
+
+
+  - name : "Banner issue.net 새로 생성"
+    blockinfile:
+      path: /etc/issue.net
+      block: |
+        ####################################################################################
+        #                                                                                  #
+        #                                                                                  #
+        #  [[[ !!!WARNING!!!  !!!WARNING!!! !!!WARNING!!! !!!WARNING!!! !!!WARNING!!!]]]   #
+        #                                                                                  #
+        #  A Person Autherized By 0110 Inc Can Use This Machine.                           #
+        #  Even If You Are Autherized, You Can Only Utilize To The Purpose.                #
+        #  Any Illegal Action May Results In Severe Civil And Criminal Penalties.          #
+        #                                                                                  #
+        #                                                                                  #
+        #  [[[ !!!WARNING!!!  !!!WARNING!!! !!!WARNING!!! !!!WARNING!!! !!!WARNING!!!]]]   #
+        #  이 서버는 0110의 자산 입니다                                                      #
+        #  승인된 사용자 외의 접근을 금지합니다.                                              #
+        #  만약 서버에서 불법적인 행동을 했다면 민 형사상 법적 책임이 따릅니다                  #
+        #                                                                                  #
+        #                                                                                  #
+        ####################################################################################
+      create: yes
+      marker: ""
+
+  - name : "서버 Port 22 -> 20022 로 변경"
+    lineinfile:
+      path: "/etc/ssh/sshd_config"
+      regexp: '\#Port 22'
+      line: "Port 20022"
+      backrefs: yes
+  - name: "data disk script 적용"
+    shell: |
+      cat <<'EOF' > /home/azureuser/disk_add.sh
+      #!/bin/bash
+      # 만든이 : 01110
+      # 제작일자 : 2023-01
+      DISK_NAME={{ disk_name }} #이 부분으로 sd* 부분 출력 tip) Ansible Script 에 넣으려면 중괄호 두번쳐서 쓰기
+      DISK_SCSI={{ disk_scsi }}
+      DIRECTORY_MOUNT=(  
+      {{ mount_point }}
+      )
+      # 데이터 디스크 리스트를추출한다
+      #만약 Azure 용이 아니라면 /dev/disk/azure -> 이부분이 다르게 들어갈듯?
+      data_disk_list=$(ls -l ${DISK_SCSI}|grep -i "${DISK_NAME}" |awk '{print $11}'| sed 's/\(\.\.\/\)//g')
+
+      # parted 할때 device를 찾아야하는데 이 과정에서 필요하다
+      parent_data_disk_array=() # 디스크 상위 계층 sdc sdd... 배열 저장용
+      child_data_disk_array=()  # 디스크 하위 계층 sdc1 sdd1.... 배열 저장용
+
+      # for문이 돌때마다 배열에 0 번째 1번째 ... 자리에 data_disk_list 를 돌린다
+      # 돌린 후 나온 디스크 배열들을 parted 하여 포맷한다.
+      for i in ${data_disk_list[@]};
+      do
+        if [[ $i == ${DISK_NAME}[a-z] ]]; then
+        parent_data_disk_array+=("$i") 
+        sudo parted /dev/${i} --script mklabel gpt mkpart xfspart xfs 0% 100%
+        sudo partprobe /dev/${i}
+        echo ${i}
+        fi
+      done
+
+      echo ${parent_data_disk_array[@]}  # 결과 sdc sdd ...
+
+      # for문이 돌때마다 배열에 0 번째 1번째 ... 자리에 data_disk_list 를 돌린다
+      # 돌린 후 나온 디스크 배열들을 mkfs xfs 파일시스템으로 형식 지정
+      for i in ${data_disk_list[@]};
+      do
+        if [[ $i == ${DISK_NAME}[a-z][0-9] ]]; then
+        child_data_disk_array+=("$i") 
+
+          sudo mkfs.xfs /dev/${i}
+
+        fi
+      done
+
+      echo ${child_data_disk_array[@]}  # 결과 sdc1 sdd1 ...
+
+      # 적어놓은 디렉토리 마운트 
+      for i in ${DIRECTORY_MOUNT[@]};
+      do
+      sudo mkdir ${i}
+      done
+
+      # /etc/fstab 에 영구적 마운트
+      UUID_array=() # UUID 배열 생성
+      exist_UUID=() # fstab용 존재 유무 배열 생성
+      FSTAB_EXIST=() 
+      for i in ${child_data_disk_array[@]};
+      do
+        UUID=$(sudo blkid |grep -i /dev/${i}| awk '{print $2}')
+        EXIST_BEFORE=$(sudo blkid |grep -i /dev/${i}| awk '{print $2}'|cut -f 2 -d '"')
+        UUID_array+=($UUID)
+        exist_UUID+=($EXIST_BEFORE)
+        
+      done
+
+      for i in ${exist_UUID[@]};
+      do
+
+        FSTAB_BEFORE=$(cat /etc/fstab|grep ${i} |awk '{print $1}')
+        FSTAB_EXIST+=($FSTAB_BEFORE)
+      done
+        
+        echo " 현재 신규 마운트할 UUID는 다음과 같습니다. ${FSTAB_EXIST[@]}"
+
+      # 만약 /fstab에 해당 UUID가 존재한다면 실행하지 않는다.
+
+      for i in "${!UUID_array[@]}"; do
+        if [[ ${UUID_array[$i]} == ${FSTAB_EXIST[$i]} ]]; then
+        echo "/etc/fstab에 해당 ${UUID_array[$i]} 가 존재 합니다."
+        else 
+        sudo echo "${UUID_array[$i]}    ${DIRECTORY_MOUNT[$i]}  xfs defaults    0 0" >> /etc/fstab
+        fi
+      done
+      sudo mount -a
+
+
+
+      
+  - name: "fdisk 스크립트 실행"
+    command: "bash /home/azureuser/fdisk.sh"
+
+  - name: "docker logrotate.d 에 docker 등록"
+    blockinfile: 
+      path: /etc/logrotate.d/docker
+      block: >
+        /var/lib/docker/containers/*/*-json.log {
+        rotate 3
+
+        daily
+
+        compress
+
+        missingok
+
+        copytruncate
+
+        }
+      create: yes
+
+# 이부분은 캐드바이저 설치 입니다.
+  - name: "cadvisor 설치"
+    command: "sudo mkdir cadvisor"
+  - name: "cadvisor docker-compose script 생성"
+    shell: |
+      cat <<'EOF' > /home/azureuser/cadvisor/docker-compose.yml
+      version: '3.7'
+      services:
+        cadvisor:
+          image: gcr.io/cadvisor/cadvisor:latest
+          volumes:
+            - /:/rootfs:ro
+            - /var/run:/var/run:rw
+            - /sys:/sys:ro
+            - /data/docker/:/var/lib/docker:ro
+          ports:
+            - 28080:8080
+          restart: always
+          deploy:
+            mode: global
+      EOF
+    
+  - name: "cadvisor docker-compose 실행"
+    command: "sudo docker-compose -f /home/azureuser/cadvisor/docker-compose.yml up -d"
+
+  - name: "systemctl restart sshd 이제 16215 로 접속 하시면 됩니다."
+    systemd:
+      name: "sshd"
+      state: restarted
