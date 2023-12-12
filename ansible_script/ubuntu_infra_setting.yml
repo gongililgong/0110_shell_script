@@ -513,8 +513,8 @@
 
 
       
-  - name: "fdisk 스크립트 실행"
-    command: "bash /home/{{ remote_user }}/fdisk.sh"
+  - name: "disk_add.sh 스크립트 실행"
+    command: "bash /home/{{ remote_user }}/disk_add.sh"
 
   - name: "docker logrotate.d 에 docker 등록"
     blockinfile: 
