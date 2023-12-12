@@ -13,7 +13,6 @@
 # bash 로그인 프로파일 부분 수정 [완료]
 # /etc/security/limits 부분 수정 [완료]
 #  배너 조정 [완료]
-#  젠킨스 원격 키 배포 [완료]
 #  ssh port 변경 [완료]
 #  docker log 로테이션 추가 [완료]
 #  pip3 install docker-compose [완료]
@@ -394,27 +393,6 @@
     file:
       path: "/etc/issue.net"
       state: absent
-    # 젠킨스 홈디렉토리의 ssh 디렉토리에서 공개키를 출력한다.
-  - name: "cat /var/lib/jenkins/.ssh/id_rsa.pub"
-    command: "cat /var/lib/jenkins/.ssh/id_rsa.pub"
-    connection: local
-    register: id_pub
-    run_once: true
-    vars:
-      ansible_python_interpreter: /usr/bin/python3
-  # 젠킨스의 공개키를 원격 서버의 authorized_keys에 추가한다.
-  - name: import id_rsa.pub ======> {{ hosts }}
-    lineinfile:
-      dest: "/home/{{ remote_user }}/.ssh/authorized_keys"
-      line: "{{ id_pub.stdout }}"
-
-  # 점프 박스의 공개 키를 원격 서버의 authorized_keys에 추가한다.
-  - name: "{{ hosts }}의 authorized_keys에 점프 박스의 공개키를 추가한다."
-    lineinfile:
-      dest: "/home/{{ remote_user }}/.ssh/authorized_keys"
-      line: "{{ pubkey }}"
-    become: yes
-
 
   - name : "Banner issue.net 새로 생성"
     blockinfile:
