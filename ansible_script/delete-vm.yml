@@ -38,7 +38,7 @@
             disk_size_gb: "{{ add_disk_size_gb }}"
             managed_disk_type: "{{ add_managed_disk_type }}"
             
-        state: absent# 리소스 그룹 만들기
+        state: absent
 
 # 가상 네트워크 인터페이스 카드 만들기
     - name: Create virtual network interface card == {{ vm_name }}-nic
@@ -50,6 +50,7 @@
 #        public_ip_name: "{{ vm_public_ip_name }}"
         security_group: "{{ vm_name }}-nsg"
         state: absent
+
 # 네트워크 보안 그룹 만들기
     - name: Create Network Security Group == {{ vm_name }}-nsg
       azure_rm_securitygroup:
@@ -71,7 +72,7 @@
         resource_group: "{{ resource_group }}"
         name: "{{ virtual_network_name }}"
         address_prefixes: "{{ virtual_address_prefixes }}"
-
+# 리소스 그룹 만들기
     - name: Create Azure VM  == {{ resource_group }}
       azure_rm_resourcegroup:
         name: "{{ resource_group }}"
