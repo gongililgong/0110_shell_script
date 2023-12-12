@@ -106,10 +106,6 @@
         - docker
         - docker-compose
         - linux-modules-extra-azure
-  # - name : "docker & compose install "
-  #   snap:
-  #     name : 
-  #      - docker
 
   - name : "/etc/sysctl.conf 변경 구간"
     blockinfile: 
@@ -452,7 +448,7 @@
       backrefs: yes
   - name: "data disk script 적용"
     shell: |
-      cat <<'EOF' > /home/azureuser/disk_add.sh
+      cat <<'EOF' > /home/{{ remote_user }}/disk_add.sh
       #!/bin/bash
       # 만든이 : 01110
       # 제작일자 : 2023-01
@@ -519,7 +515,7 @@
       for i in ${exist_UUID[@]};
       do
 
-        FSTAB_BEFORE=$(cat /etc/fstab|grep ${i} |awk '{print $1}')
+        FSTAB_BEFORE=$(sudo cat /etc/fstab|grep ${i} |awk '{print $1}')
         FSTAB_EXIST+=($FSTAB_BEFORE)
       done
         
@@ -540,7 +536,7 @@
 
       
   - name: "fdisk 스크립트 실행"
-    command: "bash /home/azureuser/fdisk.sh"
+    command: "bash /home/{{ remote_user }}/fdisk.sh"
 
   - name: "docker logrotate.d 에 docker 등록"
     blockinfile: 
@@ -565,7 +561,7 @@
     command: "sudo mkdir cadvisor"
   - name: "cadvisor docker-compose script 생성"
     shell: |
-      cat <<'EOF' > /home/azureuser/cadvisor/docker-compose.yml
+      cat <<'EOF' > /home/{{ remote_user }}/cadvisor/docker-compose.yml
       version: '3.7'
       services:
         cadvisor:
@@ -583,7 +579,7 @@
       EOF
     
   - name: "cadvisor docker-compose 실행"
-    command: "sudo docker-compose -f /home/azureuser/cadvisor/docker-compose.yml up -d"
+    command: "sudo docker-compose -f /home/{{ remote_user }}/cadvisor/docker-compose.yml up -d"
 
   - name: "systemctl restart sshd 이제 16215 로 접속 하시면 됩니다."
     systemd:
