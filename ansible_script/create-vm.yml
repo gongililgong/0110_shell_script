@@ -1,20 +1,20 @@
 - hosts: localhost
   tasks:
 # 리소스 그룹 만들기
-    - name: Create resource group ==> {{ resource_group }}
+    - name: Create Azure VM  == {{ resource_group }}
       azure_rm_resourcegroup:
         name: "{{ resource_group }}"
         location: "{{ location }}"
 
 # 가상네트워크 만들기
-    - name: Create virtual network ==> {{ virtual_network_name }}
+    - name: Create virtual network == {{ virtual_network_name }}
       azure_rm_virtualnetwork:
         resource_group: "{{ resource_group }}"
         name: "{{ virtual_network_name }}"
         address_prefixes: "{{ virtual_address_prefixes }}"
 
 # 서브넷 만들기
-    - name: Add subnet ==> {{ subnet_prefixes }}
+    - name: Add subnet == {{ subnet_prefixes }}
       azure_rm_subnet:
         resource_group: "{{ resource_group }}"
         name: "{{ subnet_name }}"
@@ -22,13 +22,13 @@
         virtual_network: "{{ virtual_network_name }}"
 
 # 네트워크 보안 그룹 만들기
-    - name: Create Network Security Group ==>> {{ vm_name }}-nsg
+    - name: Create Network Security Group == {{ vm_name }}-nsg
       azure_rm_securitygroup:
         resource_group: "{{ resource_group }}"
         name: "{{ vm_name }}-nsg"
 
 # 가상 네트워크 인터페이스 카드 만들기
-    - name: Create virtual network interface card ==> {{ vm_name }}-nic
+    - name: Create virtual network interface card == {{ vm_name }}-nic
       azure_rm_networkinterface:
         resource_group: "{{ resource_group }}"
         name: "{{ vm_name }}-nic"
@@ -38,7 +38,7 @@
         security_group: "{{ vm_name }}-nsg"
 
 # 가상 머신 만들기, 데이터 디스크 추가
-    - name: Create VM ==> {{ vm_name }}
+    - name: Create VM == {{ vm_name }}
       azure_rm_virtualmachine:
         resource_group: "{{ resource_group }}"
         name: "{{ vm_name }}"
