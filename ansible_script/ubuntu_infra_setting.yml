@@ -559,7 +559,7 @@
   - name: "cadvisor docker-compose 실행"
     command: "sudo docker-compose -f /home/{{ remote_user }}/cadvisor/docker-compose.yml up -d"
 
-  - name: "systemctl restart sshd 이제 16215 로 접속 하시면 됩니다."
+  - name: "systemctl restart sshd 이제 20022 로 접속 하시면 됩니다."
     systemd:
       name: "sshd"
       state: restarted
