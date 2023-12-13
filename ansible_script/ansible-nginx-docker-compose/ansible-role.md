@@ -27,10 +27,15 @@ Let Encrypt 랑 Digicert SSL파일과 경로가 달라서 무료버전을 쓰시
 nginx port :80 443 USED
 
 SSL 저장 위치 : /home/[user]/nginx/conf.d/[domain_select]
+
 SSL 명 : key.pem , cert.pem
+
 upstream_file_conf : /home/[user]/nginx/site-enalbed/[conf_name]
+
 proxy_pass : [backend_name]
+
 server_name : [hostdomain_name]
+
 upstream IP : [backends_ip]
 
 ---

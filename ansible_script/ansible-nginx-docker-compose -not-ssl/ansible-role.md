@@ -22,20 +22,23 @@ Let Encrypt 랑 Digicert SSL파일과 경로가 달라서 무료버전을 쓰시
 
  80 포트만 사용하실분들은 ansible-nginx-docker-compose -not-ssl 로 돌리시길 바랍니다.
 
-
 ---
 
-nginx port : 80 443 USED
+nginx port :80 443 USED
 
 SSL 저장 위치 : /home/[user]/nginx/conf.d/[domain_select]
+
 SSL 명 : key.pem , cert.pem
+
 upstream_file_conf : /home/[user]/nginx/site-enalbed/[conf_name]
+
 proxy_pass : [backend_name]
+
 server_name : [hostdomain_name]
+
 upstream IP : [backends_ip]
 
 ---
-
 
 각 폴더는 다음과 같은 기능이 있습니다.
 
