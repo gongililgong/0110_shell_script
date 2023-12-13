@@ -1,0 +1,5 @@
+- hosts: "{{ hosts }}"
+  become: yes
+  # ansible templetes를 위해 role 을 정해 놓는다.
+  roles:
+    - role: nginx

@@ -1,0 +1,117 @@
+---
+
+- include: multi_os.yml
+
+# OS 의 종류에 따라서 epel 설치 진행 유무가 결정된다 
+# Redhat은 epel 설치를 해야 docker가 설치되기 때문
+- include_tasks: "{{ ansible_os_family }}.yml"
+  when: ansible_os_family == 'RedHat' and ansible_distribution != 'Ubuntu'
+
+# docker network 생성 
+- name: Create a docker network
+  docker_network:
+    name: "{{ docker_network_name }}"
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+# nginx_base_directory 적어놓은대로 nginx 가 설치될 디렉토리를 만든다.
+- name: "Create the {{ nginx_base_directory }} directory on the host"
+  file:
+    path: "{{ nginx_base_directory }}"
+    state: 'directory'
+    mode: '0755'
+
+- name: "Create the {{ nginx_sites_enabled_path }} directory on the host"
+  file:
+    path: "{{ nginx_sites_enabled_path }}"
+    state: 'directory'
+    mode: '0755'
+
+# 생성된 nginx.conf 는 content에 의해서 defaults/main.yml 에 적힌 nginx_conf로 내용을 포함하여 만든다.
+# 호출 되는 근거는 playbook 돌릴시 defaults/main.yml 은 기본값이 세팅되어져 있는 공간이므로 
+# content 에서 nginx_conf 변수 호출시 vars 로 불러와지기 때문이다.
+- name: 'Put the nginx.conf file in place'
+  copy:
+    content: "{{ nginx_conf }}"
+    dest: "{{ nginx_base_directory }}/nginx.conf"
+    mode: '0644'
+
+- name: "Copy the default html contents to {{ nginx_base_directory }}/defaults on the host"
+  copy:
+    src: "{{ nginx_static_html_directory }}/"
+    dest: "{{ nginx_base_directory }}/defaults"
+    mode: '0644'
+
+
+- name: create directory for conf.d nginx
+  file:
+    path: "{{ nginx_reverse_proxy_config_directory }}"
+    state: directory
+    owner: azureuser  
+    group: azureuser  
+- name : create directory for domamin nginx
+  file:
+    path: "{{ nginx_reverse_proxy_config_directory }}/{{ domain_select }}"
+    state: directory
+    owner: azureuser
+    group: azureuser  
+
+
+
+
+# docker-compose 만드는 곳
+- name: create dockerfile for nginx-compose
+  template:
+    src: Dockerfile
+    dest: "{{ nginx_base_directory }}/Dockerfile"
+- name: deploy docker-compose.yml
+  template:
+    src: docker-compose.yml.j2
+    dest: "{{ nginx_base_directory}}/docker-compose.yml"
+
+
+
+
+
+- name: Copy general-security-headers.conf file to conf.d
+  template:
+    src: general-security-headers.conf
+    dest: "{{ nginx_reverse_proxy_config_directory }}"
+
+- name: Copy default.conf file to conf.d
+  template:
+    src: default.conf
+    dest: "{{ nginx_reverse_proxy_config_directory }}"
+# #########################################################################################################
+# 해당 부분 SSL 인증서가 있다면 주석 해제후 쓰시길 바랍니다.
+# - name: deploy SSL/TLS cert.pem
+#   template:
+#     src: cert.pem
+#     dest: "{{ nginx_ssl_certificate_path }}"
+
+# - name: deploy SSL/TLS key.pem
+#   template:
+#     src: key.pem
+#     dest: "{{ nginx_ssl_certificate_key_path }}"
+#############################################################################################################
+- name: deploy server.rewrite
+  template:
+    src: server.rewrites.j2
+    dest: "{{ nginx_reverse_proxy_config_directory }}/server.rewrites"
+
+- name: deploy reverse proxy configurations
+  template:
+    src: backend.conf.j2
+    dest: "{{ nginx_sites_enabled_path }}/{{ item.config_name }}.conf"
+  with_items: "{{ nginx_reverse_proxy_proxies }}"
+###########################################################################################################
+- name: Start the nginx docker compose
+  docker_compose:
+    project_src: "{{ nginx_base_directory }}"
+    state: present
+    restarted: yes
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+- include_tasks: test.yml 
+  #notify: 
+  #  - 'restart-docker-nginx' # 주석 해제시 docker daemon이나 서버가 죽고 다시 살아났을때 자동으로 container 기동시켜주는 명령어

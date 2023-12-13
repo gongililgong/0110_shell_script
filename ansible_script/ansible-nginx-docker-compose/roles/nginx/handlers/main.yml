@@ -1,0 +1,31 @@
+---
+- name: 'restart-docker-nginx'
+  become: yes
+  docker_container:
+    image: "nginx:{{ nginx_docker_tag }}"
+    networks:
+      - name: "{{ docker_network_name }}"
+    name: "{{ nginx_container_name }}"
+    volumes: '{{ nginx_exposed_volumes }}'
+    ports: '{{ nginx_published_ports }}'
+    exposed_ports: '{{ nginx_exposed_ports }}'
+    state: 'stopped'
+    restart_policy: 'always'
+  notify: 'start-docker-nginx'
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+- name: 'start-docker-nginx'
+  become: yes
+  docker_container:
+    image: "nginx:{{ nginx_docker_tag }}"
+    networks:
+      - name: "{{ docker_network_name }}"
+    name: "{{ nginx_container_name }}"
+    volumes: '{{ nginx_exposed_volumes }}'
+    ports: '{{ nginx_published_ports }}'
+    exposed_ports: '{{ nginx_exposed_ports }}'
+    state: 'started'
+    restart_policy: 'always'
+  vars:
+    ansible_python_interpreter: /usr/bin/python3

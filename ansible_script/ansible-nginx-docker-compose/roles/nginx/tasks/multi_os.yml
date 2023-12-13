@@ -1,0 +1,9 @@
+---
+# file: tasks/multi_os.yml
+
+- name: Gather OS Specific Variables
+  include_vars: "{{ item }}" # item 변수는 with~ 커맨드 목록을 불러온다
+  with_first_found:
+    - "../vars/{{ ansible_distribution }}-{{ ansible_distribution_version }}.yml"
+    - "../vars/{{ ansible_distribution }}.yml"
+    - "../vars/{{ ansible_os_family }}.yml"
