@@ -52,3 +52,15 @@ VM을 삭제하는 스크립트입니다.
 삭제에는 의존성이 있기에 역순으로 가장 하위부터 지워나가야 하기에 create-vm.yml을 역순으로 작성 후 
 
 state : absent 를 넣어 삭제 진행합니다.
+
+# ANSIBLE-NGINX-DOCKER-COMPOSE
+
+ansible 스크립트로 nginx를 docker-compose로 생성하여 서비스 기동 시키는 스크립트 입니다.
+
+해당 스크립트는 SSL 인증서가 필수로 있어야 정상적으로 기동 됩니다.
+
+# ANSIBLE-NGINX-DOCKER-COMPOSE
+
+ansible 스크립트로 nginx를 docker-compose로 생성하여 서비스 기동 시키는 스크립트 입니다.
+
+해당 스크립트는 SSL 인증서없어도 80 port로 정상적으로 기동 됩니다.
