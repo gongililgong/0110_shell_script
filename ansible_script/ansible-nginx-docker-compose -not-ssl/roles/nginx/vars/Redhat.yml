@@ -7,3 +7,4 @@ nginx_reverse_proxy_proxies:
     - "{{ hostdomain_name }}"
   locations: ''
   root_redirect_location: ''
+  domain_select: "{{ domain_select }}"
