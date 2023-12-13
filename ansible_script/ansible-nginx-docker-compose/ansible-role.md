@@ -2,13 +2,13 @@
 
 이 스크립트는 ansible role 기능으로 작성되었으며 nginx를 docker-compose로 기동시킵니다.
 
-어느 github 에서 nginx docker를 centos7 에 적용시키는것에 영감을 받아 Redhat 과 ubuntu 상관없이 만들수 있는 버전으로 만들었습니다.
+어느 github 에서 nginx docker를 centos7 에 적용시키는것에 영감을 받아 Redhat 과 ubuntu 상관없이 만들수 있는 docker-compose 버전으로 리메이크 하여 만들었습니다.
 
-ansible role 커스텀을 원하신다면 ansible role 작성법에 대해 알아보시면 될것 같습니다.
+Ansible script를 잘 아시는 분은 문제없이 커스텀하여 손 쉽게 재작성 하실수 있습니다.
 
-nginx-docker-compose 를 하기 위해서 여러개의 playbook과 설정파일들이 필요로 하기에 가장 효율적으로 쓸수 있는것이 무엇이 있을까 고민해 보다가 terraform module 처럼 재작성이 가능한 기능이 role 기능이었습니다.
+제작자 : 공일일공
 
-그래서 쓰기로 결심 했습니다.
+여러분들의 야근을 줄이고 불필요한 수작업이 없어지는 그날까지...
 
 
 ---
