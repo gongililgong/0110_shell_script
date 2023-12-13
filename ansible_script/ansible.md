@@ -12,9 +12,7 @@
 
 remote_user 는 sudo 권한이 있어야 합니다.
 
-만약 AWX를 설치하지 않고 사용하고 싶으시다면 
-
-ubuntu_infra_setting.yml 과 같은 레벨의 디렉토리에
+만약 AWX를 설치하지 않고 사용하고 싶으시다면 ubuntu_infra_setting.yml 과 같은 레벨의 디렉토리에
 
 extra_vars.yml 파일을 하나 만들어서
 
@@ -37,5 +35,7 @@ mount_point: 입력
 pubkey: 입력
 
 만들어서 사용하시면 됩니다.
+
+---
 
 이정도 커스텀하실줄 아신다면... ansible 변수 스크립트 적용하는건 하실줄 아시리라 믿습니다.
