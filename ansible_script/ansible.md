@@ -59,7 +59,7 @@ ansible 스크립트로 nginx를 docker-compose로 생성하여 서비스 기동
 
 해당 스크립트는 SSL 인증서가 필수로 있어야 정상적으로 기동 됩니다.
 
-# ANSIBLE-NGINX-DOCKER-COMPOSE
+# ANSIBLE-NGINX-DOCKER-COMPOSE-NOT-SSL
 
 ansible 스크립트로 nginx를 docker-compose로 생성하여 서비스 기동 시키는 스크립트 입니다.
 
