@@ -2,6 +2,14 @@
 
 이 앤서블 스크립트는 role로 만들었습니다
 
+어느 github 에서 nginx docker를 centos7 에 적용시키는것에 영감을 받아 
+
+Redhat 과 ubuntu 상관없이 만들수 있는 버전으로 만들었습니다.
+
+쓰시는것은 자유입니다.
+
+ansible role 커스텀을 원하신다면 ansible role 작성법에 대해 알아보시면 될것 같습니다.
+
 nginx-docker-compose 를 하기 위해서 여러개의 playbook과 설정파일들이 필요로 하기에 가장 효율적으로 쓸수 있는것이 무엇이 있을까 고민해 보다가 
 
 terraform module 처럼 재작성이 가능한 기능이 role 기능이었습니다. 그래서 쓰기로 결심 했습니다.
@@ -40,10 +48,4 @@ conf_name : conf파일 입력
 
 만약 443 https port를 쓰지 않겠다면 주석 처리하고 사용하시면 됩니다.
 
-어느 한 github 에서 nginx docker를 centos7 에 적용시키는것에 영감을 받아 
 
-ubuntu 버전으로 만들었습니다.
-
-쓰시는것은 자유입니다.
-
-ansible role 커스텀을 원하신다면 ansible role 작성법에 대해 알아보시면 될것 같습니다.
