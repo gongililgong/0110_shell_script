@@ -64,3 +64,9 @@ ansible 스크립트로 nginx를 docker-compose로 생성하여 서비스 기동
 ansible 스크립트로 nginx를 docker-compose로 생성하여 서비스 기동 시키는 스크립트 입니다.
 
 해당 스크립트는 SSL 인증서없어도 80 port로 정상적으로 기동 됩니다.
+
+# UBUNTU_INFRA_SETTING
+
+ UBUNTU 인프라 환경 구성을 해주는 스크립트입니다.
+
+ 상세 적용은 스크립트를 통해 확인하시길 바랍니다.
