@@ -31,7 +31,7 @@ roles
 AWX에서 쓰기 위해선 EXTRA_VARS 를 다음과 같이 집어넣으시면 됩니다.
 ---
 hosts: 
-  - 호스트네임 입력
+  \- 호스트네임 입력
 ansible_os_family: Ubuntu #or Redhat(centos 도 Redhat 으로 쓰면됨)
 domain_select: domain.com
 ansible_port: 입력
