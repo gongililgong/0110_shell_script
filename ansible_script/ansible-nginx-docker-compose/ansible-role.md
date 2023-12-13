@@ -46,10 +46,6 @@ Ansible script를 잘 아시는 분은 문제없이 커스텀하여 손 쉽게 �
  
         - vars -> Ansible EXTRA_VARS에 사용할 변수를 미리 넣어놓음
 
-자세한 것은 각 파일별로 주석처리하여 설명해놨으니 보면서 참고 하시길 바랍니다.
-
-AWX에서 쓰기 위해선 EXTRA_VARS 를 다음과 같이 집어넣으시면 됩니다.
-
 ---
 
 # Ansible EXTRA_VARS 작성 내용
