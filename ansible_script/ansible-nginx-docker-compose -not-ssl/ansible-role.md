@@ -1,28 +1,30 @@
 # 앤서블 Role
 
-이 앤서블 스크립트는 role로 만들었습니다
+이 스크립트는 ansible role 기능으로 작성되었으며 nginx를 docker-compose로 기동시킵니다.
 
 어느 github 에서 nginx docker를 centos7 에 적용시키는것에 영감을 받아 Redhat 과 ubuntu 상관없이 만들수 있는 버전으로 만들었습니다.
 
 ansible role 커스텀을 원하신다면 ansible role 작성법에 대해 알아보시면 될것 같습니다.
 
-nginx-docker-compose 를 하기 위해서 여러개의 playbook과 설정파일들이 필요로 하기에 가장 효율적으로 쓸수 있는것이 무엇이 있을까 고민해 보다가 terraform module 처럼 재작성이 가능한 기능이 role 기능이었습니다. 그래서 쓰기로 결심 했습니다.
+nginx-docker-compose 를 하기 위해서 여러개의 playbook과 설정파일들이 필요로 하기에 가장 효율적으로 쓸수 있는것이 무엇이 있을까 고민해 보다가 terraform module 처럼 재작성이 가능한 기능이 role 기능이었습니다.
+
+그래서 쓰기로 결심 했습니다.
 
 
 ---
 
-# 사용 목적
+# 사용 방법
 
-이 스크립트는 443 port 및 domain 까지 적용하실분들이 쓰시는것을 권장드립니다. 80 포트만 가지곤 에러가 날겁니다.
-(ssl 인증서를 가져오게 하기 위해 구문을 넣었기때문에 사용하실분들도 따로 폴더 내려받아서 안에다가 ssl 파일을 업로드하시고 사용하셔야합니다.)
+1. ### 해당 스크립트는 443 port 및 domain이 적용 되어 있습니다. 그러므로 SSL 인증서가 필수로 있어야 정상적으로 배포가 됩니다. 
 
- nginx 를 쓰는건 443 https 까지 태운다고 가정하에 nginx 구성 정보를 upstream과 proxy_pass 작성을 했습니다
+2. ### 인증서 업로드 경로 = roles/nginx/templates
 
-Let Encrypt 랑 Digicert SSL파일과 경로가 달라서 무료버전을 쓰시는 분들을 필수로 site-enabled에 있는 경로 수정 부탁드립니다.
+  -  인증서 이름은 기본 key.pem , cert.pem  (이름 변경 경로 : defaluts/main.yml )
 
- 80 포트만 사용하실분들은 ansible-nginx-docker-compose -not-ssl 로 돌리시길 바랍니다.
+3. ### proxy_pass 처리 (백엔드 포트 미처리시 주석 하여 사용)
 
----
+4. ### 80 포트 전용 nginx script -> ansible-nginx-docker-compose-not-ssl 사용바람
+
 
 nginx port :80 443 USED
 
@@ -40,7 +42,7 @@ upstream IP : [backends_ip]
 
 ---
 
-각 폴더는 다음과 같은 기능이 있습니다.
+# 폴더별 설명
 
 - roles
 
@@ -64,6 +66,9 @@ upstream IP : [backends_ip]
 AWX에서 쓰기 위해선 EXTRA_VARS 를 다음과 같이 집어넣으시면 됩니다.
 
 ---
+
+# Ansible EXTRA_VARS 작성 내용
+
 hosts: 
   \- 호스트네임 입력
 
