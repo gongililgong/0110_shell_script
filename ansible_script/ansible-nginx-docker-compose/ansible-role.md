@@ -19,7 +19,7 @@ terraform module 처럼 재작성이 가능한 기능이 role 기능이었습니
 
 각 폴더는 다음과 같은 기능이 있습니다.
 
-roles
+- roles
 
     - nginx -> role에서 불러온 nginx 폴더
 
