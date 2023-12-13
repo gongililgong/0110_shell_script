@@ -15,30 +15,15 @@ nginx-docker-compose 를 하기 위해서 여러개의 playbook과 설정파일�
 
 # 사용 방법
 
-### 1. 해당 스크립트는 443 port 및 domain이 적용 되어 있습니다. 그러므로 SSL 인증서가 필수로 있어야 정상적으로 배포가 됩니다. 
+#### 1. 해당 스크립트는 443 port 및 domain이 적용 되어 있습니다. 그러므로 SSL 인증서가 필수로 있어야 정상적으로 배포가 됩니다. 
 
-### 2. 인증서 업로드 경로 = roles/nginx/templates
+#### 2. 인증서 업로드 경로 = roles/nginx/templates
 
   -  인증서 이름은 기본 key.pem , cert.pem  (이름 변경 경로 : defaluts/main.yml )
 
-### 3. proxy_pass 처리 (백엔드 포트 미처리시 주석 하여 사용)
+#### 3. proxy_pass 처리 (백엔드 포트 미처리시 주석 하여 사용)
 
-### 4. 80 포트 전용 nginx script -> ansible-nginx-docker-compose-not-ssl 사용바람
-
-
-nginx port :80 443 USED
-
-SSL 저장 위치 : /home/[user]/nginx/conf.d/[domain_select]
-
-SSL 명 : key.pem , cert.pem
-
-upstream_file_conf : /home/[user]/nginx/site-enalbed/[conf_name]
-
-proxy_pass : [backend_name]
-
-server_name : [hostdomain_name]
-
-upstream IP : [backends_ip]
+#### 4. 80 포트 전용 nginx script -> ansible-nginx-docker-compose-not-ssl 사용바람
 
 ---
 
