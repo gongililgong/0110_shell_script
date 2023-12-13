@@ -15,7 +15,10 @@ nginx_container_name: 'nginx' # nginx container 명
 nginx_docker_tag: 'latest' # nginx image tag 불러오기
 nginx_dockerfile_path: "{{ nginx_base_directory }}/Dockerfile"
 docker_network_name: "{{ docker_network_name }}"
-
+nginx_ssl_cert_name: "cert.pem" # SSL 인증서 키 파일명 
+nginx_ssl_key_name: "key.pem" # SSL 인증서 키 파일명 
+nginx_ssl_certificate_path: "{{ nginx_base_directory }}/conf.d/{{ domain_select }}/cert.pem"
+nginx_ssl_certificate_key_path: "{{ nginx_base_directory }}/conf.d/{{ domain_select }}/key.pem"
           # nginx 설정 관련 모음 #
 nginx_static_html_directory: 'defaults' # nginx html 저장 폴더명
 nginx_sites_enabled_path: "{{ nginx_base_directory }}/sites-enabled"
