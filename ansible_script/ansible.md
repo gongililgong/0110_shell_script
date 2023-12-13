@@ -17,7 +17,9 @@ remote_user 는 sudo 권한이 있어야 합니다.
 ubuntu_infra_setting.yml 과 같은 레벨의 디렉토리에
 
 extra_vars.yml 파일을 하나 만들어서
+
 ---
+
 #vm 이름
 hosts: 
 - yj-infra-test-vm
