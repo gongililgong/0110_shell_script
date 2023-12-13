@@ -18,10 +18,6 @@ docker_network_name: "{{ docker_network_name }}"
 
           # nginx 설정 관련 모음 #
 nginx_static_html_directory: 'defaults' # nginx html 저장 폴더명
-nginx_ssl_cert_name: "cert.pem" # SSL 인증서 키 파일명 
-nginx_ssl_key_name: "key.pem" # SSL 인증서 키 파일명 
-nginx_ssl_certificate_path: "{{ nginx_base_directory }}/conf.d/{{ domain_select }}/cert.pem" # 443 사용하지않을거면 해당부분 주석처리
-nginx_ssl_certificate_key_path: "{{ nginx_base_directory }}/conf.d/{{ domain_select }}/key.pem" # 443 사용하지않을거면 해당부분 주석처리
 nginx_sites_enabled_path: "{{ nginx_base_directory }}/sites-enabled"
 nginx_log_dir_path: "/var/log/nginx"
 nginx_reverse_proxy_proxies: []
@@ -33,11 +29,9 @@ nginx_reverse_proxy_proxies: []
 nginx_exposed_ports:
   - '80'
   - '443'
-
 nginx_published_ports:
   - '80:80'
   - '443:443'
-
 nginx_exposed_volumes:
   - /etc/localtime:/etc/localtime:ro
   - /etc/letsencrypt:/etc/letsencrypt

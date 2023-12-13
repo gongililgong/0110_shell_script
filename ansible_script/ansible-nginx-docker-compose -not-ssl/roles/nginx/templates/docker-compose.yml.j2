@@ -1,0 +1,38 @@
+---
+version: '3.7'
+
+services:
+  nginx:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "5"
+    container_name: nginx
+    environment:
+      TZ: "Asia/Seoul"
+    ports:
+      - "80:80"
+      - "443:443"
+
+    volumes:
+        - /etc/localtime:/etc/localtime:ro
+        - /etc/letsencrypt:/etc/letsencrypt
+        - /var/www/letsencrypt:/var/www/letsencrypt
+        - /var/log/nginx:/var/log/nginx
+        - "{{ nginx_base_directory }}/nginx.conf:/etc/nginx/nginx.conf:ro"
+        - "{{ nginx_base_directory }}/defaults:/usr/share/nginx/html:ro"
+        - "{{ nginx_reverse_proxy_config_directory }}:/etc/nginx/conf.d:rw"
+        - "{{ nginx_sites_enabled_path }}:/etc/nginx/sites-enabled:ro"
+    healthcheck:
+      test: curl --fail -s http://127.0.0.1:80 || exit 1
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+networks:
+  default:
+   external:
+    name: {{ docker_network_name }}

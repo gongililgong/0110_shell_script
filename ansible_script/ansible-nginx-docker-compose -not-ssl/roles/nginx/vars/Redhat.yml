@@ -1,0 +1,9 @@
+---
+nginx_reverse_proxy_proxies:
+- config_name: "{{ conf_name }}"
+  backend_name: "{{ backend_name }}"
+  backends: "{{ backends_ip }}"
+  domains:
+    - "{{ hostdomain_name }}"
+  locations: ''
+  root_redirect_location: ''

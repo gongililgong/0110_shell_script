@@ -1,0 +1,37 @@
+---
+# - name: symlink /usr/bin/python -> /usr/bin/python3
+#   raw: |
+#     if [ -f /usr/bin/python3 ] && [ ! -f /usr/bin/python ]; then
+#       ln --symbolic /usr/bin/python3 /usr/bin/python;
+#     fi
+
+- name: install EPEL release package for RHEL
+  yum:
+    name: "https://dl.fedoraproject.org/pub/epel/epel-release-latest-{{ ansible_distribution_major_version }}.noarch.rpm"
+    state: latest
+  vars:
+    ansible_python_interpreter: /usr/bin/python2
+  when: ansible_distribution == 'Red Hat Enterprise Linux'
+
+- name: install EPEL release package for Centos
+  yum:
+    name: "epel-release"
+    state: present
+  vars:
+    ansible_python_interpreter: /usr/bin/python2
+  when: ansible_distribution == 'CentOS'
+
+- name: install python docker & docker-compose module
+  pip:
+    name:
+      - docker
+      - docker-compose
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+- name: libselinux-python
+  yum:
+    name: libselinux-python3
+    state: present
+  vars:
+    ansible_python_interpreter: /usr/bin/python2

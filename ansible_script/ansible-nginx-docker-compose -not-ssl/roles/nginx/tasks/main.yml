@@ -84,15 +84,15 @@
     dest: "{{ nginx_reverse_proxy_config_directory }}"
 # #########################################################################################################
 # 해당 부분 SSL 인증서가 있다면 주석 해제후 쓰시길 바랍니다.
-- name: deploy SSL/TLS cert.pem
-  template:
-    src: cert.pem
-    dest: "{{ nginx_ssl_certificate_path }}"
+# - name: deploy SSL/TLS cert.pem
+#   template:
+#     src: cert.pem
+#     dest: "{{ nginx_ssl_certificate_path }}"
 
-- name: deploy SSL/TLS key.pem
-  template:
-    src: key.pem
-    dest: "{{ nginx_ssl_certificate_key_path }}"
+# - name: deploy SSL/TLS key.pem
+#   template:
+#     src: key.pem
+#     dest: "{{ nginx_ssl_certificate_key_path }}"
 #############################################################################################################
 - name: deploy server.rewrite
   template:

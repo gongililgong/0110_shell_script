@@ -17,14 +17,9 @@ terraform module 처럼 재작성이 가능한 기능이 role 기능이었습니
 
 ---
 
+ansible-nginx-docker-compose -not-ssl 은 443 사용하지 않거나 도메인이 없는 경우 쓰면 좋습니다.
 
-기본적으로 nginx 를 쓰는건 443 https 까지 태운다고 가정하에 nginx 구성 정보를 upstream과 proxy_pass 작성을 했습니다
 
-만약 443 https port를 쓰지 않겠다면 주석 처리하고 사용하시면 됩니다.
-
-참고로 SSL CERT 파일은 개별로 준비하셔서 따로 넣으셔야 됩니다. 만약 무료 버전의 SSL을 사용한다면 따로 경로 수정이 필요합니다.
-
-그게 아니라면 해당 깃허브에 있는 ansible-nginx-docker-compose -not-ssl 로 돌리시길 바랍니다.
 
 각 폴더는 다음과 같은 기능이 있습니다.
 
