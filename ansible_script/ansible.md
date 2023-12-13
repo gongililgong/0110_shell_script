@@ -21,6 +21,7 @@ extra_vars.yml 파일을 하나 만들어서
 #vm 이름
 
 hosts: 
+
 \- yj-infra-test-vm
 
 ansible_port: 입력
