@@ -21,11 +21,17 @@ extra_vars.yml 파일을 하나 만들어서
 #vm 이름
 hosts: 
 - yj-infra-test-vm
+
 ansible_port: 입력
+
 remote_user:  입력
+
 disk_name: 입력
+
 disk_scsi: 입력
+
 mount_point: 입력
+
 pubkey: 입력
 
 만들어서 사용하시면 됩니다.
