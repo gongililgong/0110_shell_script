@@ -204,7 +204,7 @@
   - name: "chrony time.bora.net 서버로 변경 "
     command: "sudo sed -i 's/server/#server/' /etc/chrony.conf"
 
-- name: "systemctl restart chronyd"
+  - name: "systemctl restart chronyd"
     systemd:
       name: "chronyd"
       state: restarted
