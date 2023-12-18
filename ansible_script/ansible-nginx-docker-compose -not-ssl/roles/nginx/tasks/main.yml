@@ -47,14 +47,14 @@
   file:
     path: "{{ nginx_reverse_proxy_config_directory }}"
     state: directory
-    owner: azureuser  
-    group: azureuser  
+    owner: "{{ remote_user }}"  
+    group: "{{ remote_user }}"  
 - name : create directory for domamin nginx
   file:
     path: "{{ nginx_reverse_proxy_config_directory }}/{{ domain_select }}"
     state: directory
-    owner: azureuser
-    group: azureuser  
+    owner: "{{ remote_user }}"
+    group: "{{ remote_user }}"  
 
 
 
